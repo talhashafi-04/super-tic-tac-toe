@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Tic-Tac-Toe</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"> 
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --secondary: #fd79a8;
+            --secondary-light: #fab1c9;
+            --bg-color: #f8f9fa;
+            --dark: #2d3436;
+            --light: #ffffff;
+            --gray: #dfe6e9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #e74c3c;
+            --disabled: #b2bec3;
+            --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .game-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--light);
+        }
+        
+        .game-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .room-info {
+            background-color: var(--secondary);
+            color: var(--light);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .room-code {
+            margin-left: 0.5rem;
+            font-weight: bold;
+        }
+        
+        /* Game Area */
+        #gameArea {
+            width: 100%;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        @media (min-width: 992px) {
+            .game-container {
+                flex-direction: row;
+            }
+        }
+        
+        /* Board Section */
+        .board-section {
+            flex: 1;
+            background-color: var(--light);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .turn-indicator {
+            margin-bottom: 1.5rem;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-light);
+            color: var(--light);
+            border-radius: 50px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .next-board-indicator {
+            margin-bottom: 1.5rem;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--success);
+            color: var(--light);
+            border-radius: 50px;
+            font-weight: bold;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(108, 92, 231, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0); }
+        }
+        
+        #superBoard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .local-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            background-color: var(--gray);
+            border-radius: 15px;
+            padding: 10px;
+            position: relative;
+        }
+        
+        .local-board.active {
+            box-shadow: 0 0 0 3px var(--success);
+        }
+        
+        .local-board.inactive {
+            opacity: 0.7;
+        }
+        
+        .local-board.won-x::after,
+        .local-board.won-o::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        
+        .local-board.won-x::after {
+            content: "X";
+            color: var(--primary);
+        }
+        
+        .local-board.won-o::after {
+            content: "O";
+            color: var(--secondary);
+        }
+        
+        .local-board.tie::after {
+            content: "TIE";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--warning);
+        }
+        
+        .cell {
+            aspect-ratio: 1;
+            background-color: var(--light);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .cell:hover:not(.disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .cell.disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        
+        .cell.x {
+            color: var(--primary);
+        }
+        
+        .cell.o {
+            color: var(--secondary);
+        }
+        
+        /* Game rules */
+        .game-rules {
+            margin-top: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .rules-toggle {
+            background-color: var(--primary-light);
+            color: var(--light);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .rules-content {
+            background-color: var(--bg-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .rules-content.active {
+            display: block;
+        }
+        
+        .rules-content h4 {
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+        }
+        
+        .rules-content ul {
+            margin-left: 1.5rem;
+        }
+        
+        .rules-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Info Section */
+        .info-section {
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .player-card, .chat-card {
+            background-color: var(--light);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .card-header i {
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .player-lists {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .player-list {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .list-title {
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .list-title i {
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+        
+        #playerList, #spectatorList {
+            list-style: none;
+            background-color: var(--bg-color);
+            border-radius: 10px;
+            overflow: hidden;
+            padding: 0.5rem;
+            min-height: 100px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        #playerList li, #spectatorList li {
+            padding: 0.5rem;
+            margin-bottom: 0.3rem;
+            border-radius: 8px;
+            background-color: var(--light);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        #playerList li {
+            border-left: 3px solid var(--primary);
+        }
+        
+        #spectatorList li {
+            border-left: 3px solid var(--warning);
+        }
+        
+        /* Chat */
+        .chat-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #chatBox {
+            background-color: var(--bg-color);
+            border-radius: 15px;
+            padding: 1rem;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .chat-message {
+            padding: 0.7rem 1rem;
+            border-radius: 15px;
+            max-width: 85%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chat-message.self {
+            align-self: flex-end;
+            background-color: var(--primary-light);
+            color: var(--light);
+        }
+        
+        .chat-message.other {
+            align-self: flex-start;
+            background-color: var(--light);
+            border-left: 3px solid var(--secondary);
+        }
+        
+        .sender {
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        #chatInput {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--gray);
+            border-radius: 50px;
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        #chatInput:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .send-btn:hover {
+            background-color: var(--primary-light);
+            transform: scale(1.1);
+        }
+        
+        /* Game Status */
+        .game-status {
+            margin-top: 1.5rem;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 15px;
+            background-color: var(--primary-light);
+            color: white;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+        
+        .game-status.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .game-status.win {
+            background-color: var(--success);
+        }
+        
+        .game-status.draw {
+            background-color: var(--warning);
+        }
+        
+        /* Utilities */
+        .hidden {
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .game-container {
+                flex-direction: column;
+            }
+            
+            .info-section {
+                max-width: 100%;
+            }
+            
+            .cell {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="gameArea">
+            <div class="game-header">
+                <h1>Ultimate Tic-Tac-Toe</h1>
+                <div class="room-info">
+                    <i class="fas fa-hashtag"></i>
+                    <span id="roomCodeDisplay" class="room-code">Loading room...</span>
+                </div>
+            </div>
+            
+            <div class="game-container">
+                <div class="board-section">
+                    <div class="turn-indicator" id="turnIndicator">
+                        <i class="fas fa-circle-play"></i> Waiting for players...
+                    </div>
+                    <div class="next-board-indicator" id="nextBoardIndicator">
+                        <i class="fas fa-chess-board"></i> Play anywhere
+                    </div>
+                    <div id="superBoard" class="super-board"></div>
+                    <div class="game-status" id="gameStatus"></div>
+                    
+                    <div class="game-rules">
+                        <div class="rules-toggle" id="rulesToggle">
+                            <i class="fas fa-book"></i> Game Rules (Click to Toggle)
+                        </div>
+                        <div class="rules-content" id="rulesContent">
+                            <h4>How to Play Ultimate Tic-Tac-Toe:</h4>
+                            <ul>
+                                <li>The board consists of 9 smaller tic-tac-toe boards arranged in a 3×3 grid.</li>
+                                <li>The first player can place their mark anywhere on any small board.</li>
+                                <li>The position of the last played mark determines which small board the next player must play in. For example, if a player places an X in the top-right cell of a small board, the next player must play in the top-right small board.</li>
+                                <li>If a player is sent to a small board that is already won or full, they can play on any open small board.</li>
+                                <li>To win the game, a player must win three small boards in a row (horizontally, vertically, or diagonally).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="player-card">
+                        <div class="card-header">
+                            <i class="fas fa-users"></i>
+                            <h3>Players</h3>
+                        </div>
+                        
+                        <div class="player-lists">
+                            <div class="player-list">
+                                <div class="list-title">
+                                    <i class="fas fa-gamepad"></i> Players
+                                </div>
+                                <ul id="playerList"></ul>
+                            </div>
+                            
+                            <div class="player-list">
+                                <div class="list-title">
+                                    <i class="fas fa-eye"></i> Spectators
+                                </div>
+                                <ul id="spectatorList"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-card">
+                        <div class="card-header">
+                            <i class="fas fa-comments"></i>
+                            <h3>Chat</h3>
+                        </div>
+                        
+                        <div id="chatBox">
+                            <div class="chat-message other">
+                                <div class="sender">System</div>
+                                <div>Welcome to Ultimate Tic-Tac-Toe! Have fun playing!</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <input type="text" id="chatInput" placeholder="Type your message..." onkeydown="if (event.key === 'Enter') sendChat()">
+                            <button class="send-btn" onclick="sendChat()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const playerName = new URLSearchParams(window.location.search).get('name');
+        const roomCode = new URLSearchParams(window.location.search).get('room') || null;
+
+        const socket = new WebSocket(`ws://${window.location.host}/ws/game?name=${encodeURIComponent(playerName)}${roomCode ? `&room=${roomCode}` : ''}`);
+        let currentPlayer = '';
+        let gameState = 'waiting';
+        let nextBoardIndex = -1; // -1 means player can choose any board
+
+        socket.onopen = () => {
+            console.log('Connected to server');
+            document.getElementById('gameArea').style.display = 'block';
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.type === 'state') {
+                updateSuperBoard(data.superBoard, data.localBoards, data.nextBoardIndex);
+                updatePlayers(data.players, data.spectators);
+                updateTurnIndicator(data.currentPlayer, data.gameState);
+                updateNextBoardIndicator(data.nextBoardIndex);
+                nextBoardIndex = data.nextBoardIndex;
+                if (data.gameState !== 'waiting' && data.gameState !== 'playing') {
+                    updateGameStatusDisplay(data.gameState, data.winner);
+                }
+            } else if (data.type === 'chat') {
+                addChatMessage(data.sender, data.message);
+            } else if (data.type === 'roomInfo') {
+                document.getElementById('roomCodeDisplay').innerText = data.room;
+            }
+        };
+
+        function updateSuperBoard(superBoard, localBoards, nextBoardIndex) {
+            const superBoardElement = document.getElementById('superBoard');
+            superBoardElement.innerHTML = '';
+            
+            // Create 9 local boards
+            for (let i = 0; i < 9; i++) {
+                const localBoardElement = document.createElement('div');
+                localBoardElement.classList.add('local-board');
+                
+                // Add classes based on the board state
+                if (superBoard[i] === 'X') {
+                    localBoardElement.classList.add('won-x');
+                } else if (superBoard[i] === 'O') {
+                    localBoardElement.classList.add('won-o');
+                } else if (superBoard[i] === 'T') {
+                    localBoardElement.classList.add('tie');
+                } else {
+                    // If this is the next board to play on, highlight it
+                    if (nextBoardIndex === -1 || nextBoardIndex === i) {
+                        localBoardElement.classList.add('active');
+                    } else {
+                        localBoardElement.classList.add('inactive');
+                    }
+                }
+                
+                // Create 9 cells for each local board
+                for (let j = 0; j < 9; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    
+                    const globalIndex = i * 9 + j;
+                    
+                    if (localBoards[globalIndex] === 'X') {
+                        cell.classList.add('x');
+                        cell.innerHTML = '<i class="fas fa-times"></i>';
+                    } else if (localBoards[globalIndex] === 'O') {
+                        cell.classList.add('o');
+                        cell.innerHTML = '<i class="fas fa-circle"></i>';
+                    }
+                    
+                    // Disable cell if:
+                    // 1. The local board is already won or tied
+                    // 2. This is not the active board (unless all boards are active)
+                    // 3. The cell is already filled
+                    if (superBoard[i] || (nextBoardIndex !== -1 && nextBoardIndex !== i) || localBoards[globalIndex]) {
+                        cell.classList.add('disabled');
+                    } else {
+                        cell.onclick = () => makeMove(globalIndex);
+                    }
+                    
+                    localBoardElement.appendChild(cell);
+                }
+                
+                superBoardElement.appendChild(localBoardElement);
+            }
+        }
+
+        function updateNextBoardIndicator(nextBoardIndex) {
+            const indicator = document.getElementById('nextBoardIndicator');
+            
+            if (nextBoardIndex === -1) {
+                indicator.innerHTML = '<i class="fas fa-chess-board"></i> Play anywhere';
+            } else {
+                const boardPositions = ['Top-Left', 'Top-Middle', 'Top-Right', 'Middle-Left', 'Middle', 'Middle-Right', 'Bottom-Left', 'Bottom-Middle', 'Bottom-Right'];
+                indicator.innerHTML = `<i class="fas fa-chess-board"></i> Next play: ${boardPositions[nextBoardIndex]} board`;
+            }
+        }
+
+        function updatePlayers(players, spectators) {
+            const playerList = document.getElementById('playerList');
+            const spectatorList = document.getElementById('spectatorList');
+            
+            playerList.innerHTML = '';
+            if (players.length === 0) {
+                playerList.innerHTML = '<li>Waiting for players...</li>';
+            } else {
+                players.forEach((player, index) => {
+                    const li = document.createElement('li');
+                    const symbol = index === 0 ? ' (X)' : ' (O)';
+                    li.innerHTML = player === playerName ? 
+                        `<i class="fas fa-user-circle"></i> ${player}${symbol} (You)` : 
+                        `${player}${symbol}`;
+                    playerList.appendChild(li);
+                });
+            }
+            
+            spectatorList.innerHTML = '';
+            if (spectators.length === 0) {
+                spectatorList.innerHTML = '<li>No spectators</li>';
+            } else {
+                spectators.forEach(spectator => {
+                    const li = document.createElement('li');
+                    li.innerHTML = spectator === playerName ? 
+                        `<i class="fas fa-user-circle"></i> ${spectator} (You)` : 
+                        spectator;
+                    spectatorList.appendChild(li);
+                });
+            }
+        }
+
+        function updateTurnIndicator(currentPlayer, gameState) {
+            const turnIndicator = document.getElementById('turnIndicator');
+            
+            if (gameState === 'waiting') {
+                turnIndicator.innerHTML = '<i class="fas fa-circle-play"></i> Waiting for players...';
+            } else if (gameState === 'playing') {
+                const playerSymbol = currentPlayer === 'X' ? 
+                    '<i class="fas fa-times" style="color: var(--primary);"></i>' : 
+                    '<i class="fas fa-circle" style="color: var(--secondary);"></i>';
+                turnIndicator.innerHTML = `${playerSymbol} ${currentPlayer}'s turn`;
+            } else if (gameState === 'win') {
+                turnIndicator.innerHTML = `<i class="fas fa-trophy"></i> Game over`;
+            } else if (gameState === 'draw') {
+                turnIndicator.innerHTML = `<i class="fas fa-handshake"></i> Game over`;
+            }
+        }
+
+        function updateGameStatusDisplay(gameState, winner) {
+            const gameStatus = document.getElementById('gameStatus');
+            
+            gameStatus.classList.add('active');
+            
+            if (gameState === 'win') {
+                gameStatus.innerHTML = `<i class="fas fa-crown"></i> Player ${winner} wins!`;
+                gameStatus.classList.add('win');
+                gameStatus.classList.remove('draw');
+            } else if (gameState === 'draw') {
+                gameStatus.innerHTML = `<i class="fas fa-balance-scale"></i> Game ended in a draw!`;
+                gameStatus.classList.add('draw');
+                gameStatus.classList.remove('win');
+            }
+        }
+
+        function makeMove(index) {
+            socket.send(JSON.stringify({ type: 'move', index }));
+        }
+
+        function sendChat() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (message) {
+                socket.send(JSON.stringify({ type: 'chat', message }));
+                input.value = '';
+                
+                // Add message locally with "self" styling
+                addChatMessage(playerName, message, true);
+            }
+        }
+
+        function addChatMessage(sender, message, isSelf = false) {
+            const chatBox = document.getElementById('chatBox');
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('chat-message');
+            msgDiv.classList.add(isSelf ? 'self' : 'other');
+            
+            const senderDiv = document.createElement('div');
+            senderDiv.classList.add('sender');
+            senderDiv.innerText = sender;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.innerText = message;
+            
+            msgDiv.appendChild(senderDiv);
+            msgDiv.appendChild(contentDiv);
+            
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Toggle rules
+        document.getElementById('rulesToggle').addEventListener('click', function() {
+            const rulesContent = document.getElementById('rulesContent');
+            rulesContent.classList.toggle('active');
+        });
+
+        // Handle socket closure
+        socket.onclose = () => {
+            console.log('Connection closed');
+            addChatMessage('System', 'Connection lost. Please refresh the page.', false);
+            document.getElementById('turnIndicator').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Connection lost';
+            document.getElementById('turnIndicator').style.backgroundColor = '#e74c3c';
+        };
+
+        // Handle socket errors
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            addChatMessage('System', 'Connection error. Please refresh the page.', false);
+        };
+
+        // Allow chat input to also send on Enter key
+        document.getElementById('chatInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                sendChat();
+            }
+        });
+    </script>
+</body>
+</html>

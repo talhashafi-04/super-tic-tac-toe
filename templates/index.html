@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="landing-page">
+        <div class="landing-hero">
+            <div class="hero-content">
+                <div class="game-logo">
+                    <i class="fas fa-gamepad"></i>
+                    <h1>Super Tic-Tac-Toe</h1>
+                </div>
+                <p class="hero-description">Play the classic game of Tic-Tac-Toe online with friends!</p>
+                
+                <div class="action-buttons">
+                    <a href="/room" class="button-primary">
+                        <i class="fas fa-play"></i> Play Now
+                    </a>
+                </div>
+            </div>
+            
+            <div class="hero-image">
+                <div class="game-preview">
+                    <div class="preview-board">
+                        <div class="preview-cell x-preview"></div>
+                        <div class="preview-cell"></div>
+                        <div class="preview-cell o-preview"></div>
+                        <div class="preview-cell"></div>
+                        <div class="preview-cell x-preview"></div>
+                        <div class="preview-cell"></div>
+                        <div class="preview-cell o-preview"></div>
+                        <div class="preview-cell"></div>
+                        <div class="preview-cell x-preview"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features-section">
+            <h2>Game Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Multiplayer</h3>
+                    <p>Play against friends in real-time with instant move updates.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Live Chat</h3>
+                    <p>Chat with your opponent during the game.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Spectator Mode</h3>
+                    <p>Watch other players' games if rooms are full.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <h3>Easy Sharing</h3>
+                    <p>Invite friends by sharing your room code.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="how-to-play">
+            <h2>How To Play</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Create a Game</h3>
+                        <p>Start a new game and get a unique room code.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Invite Friends</h3>
+                        <p>Share your room code with friends so they can join.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Play!</h3>
+                        <p>Take turns placing X's and O's to get three in a row.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2025 Super Tic-Tac-Toe</p>
+                <div class="footer-links">
+                    <a href="#" onclick="alert('Rules: Get three in a row to win!'); return false;">Rules</a>
+                    <a href="#" onclick="alert('This is a multiplayer Tic-Tac-Toe game using WebSockets.'); return false;">About</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        // Check if we have a room join parameter
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const joinCode = urlParams.get('join');
+            
+            if (joinCode) {
+                window.location.href = `/game?join=${joinCode}`;
+            }
+        });
+    </script>
+</body>
+</html>

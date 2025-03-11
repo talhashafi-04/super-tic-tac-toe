@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Super Tic-Tac-Toe Lobby</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --secondary: #fd79a8;
+            --secondary-light: #fab1c9;
+            --bg-color: #f8f9fa;
+            --dark: #2d3436;
+            --light: #ffffff;
+            --gray: #dfe6e9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease-in-out;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+        }
+
+        /* Main Title */
+        .main-title {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1.2s ease-in-out;
+        }
+
+        /* Room Box */
+        #lobby {
+            background-color: var(--light);
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: var(--card-shadow);
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+            animation: slideUp 0.8s ease-in-out;
+        }
+
+        .game-header {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--gray);
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+            text-align: center;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 8px var(--primary-light);
+        }
+
+        /* Buttons */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="main-title">Connect and Play with Friends!</h1>
+
+    <div id="lobby">
+        <div class="game-header">Super Tic-Tac-Toe</div>
+
+        <div class="input-group">
+            <label for="playerName">Your Nickname</label>
+            <input type="text" id="playerName" placeholder="Enter your name">
+        </div>
+
+        <div class="input-group">
+            <label for="roomCode">Room Code (Optional)</label>
+            <input type="text" id="roomCode" placeholder="Leave empty to create a new room">
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-primary" onclick="createRoom()">Create Game</button>
+            <button class="btn btn-secondary" onclick="joinRoom()">Join Game</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function createRoom() {
+        const playerName = document.getElementById('playerName').value.trim();
+        if (playerName === "") {
+            alert("Please enter your name");
+            return;
+        }
+        window.location.href = `/game?name=${encodeURIComponent(playerName)}`;
+    }
+
+    function joinRoom() {
+        const playerName = document.getElementById('playerName').value.trim();
+        const roomCode = document.getElementById('roomCode').value.trim();
+        if (playerName === "") {
+            alert("Please enter your name");
+            return;
+        }
+        if (roomCode === "") {
+            alert("Please enter a room code to join");
+            return;
+        }
+        window.location.href = `/game?name=${encodeURIComponent(playerName)}&room=${encodeURIComponent(roomCode)}`;
+    }
+</script>
+
+</body>
+</html>
