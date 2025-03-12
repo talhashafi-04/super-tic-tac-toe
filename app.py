@@ -1,7 +1,10 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
+
+
 from typing import List, Dict, Optional
 from uuid import uuid4
 import json
@@ -11,6 +14,14 @@ app = FastAPI()
 # Static files and templates setup
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, you'd limit this
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class ConnectionManager:
@@ -164,19 +175,16 @@ class GameRoom:
 manager = ConnectionManager()
 
 @app.get("/", response_class=HTMLResponse)
-async def root():
-    with open("templates/index.html", "r") as f:
-        return HTMLResponse(f.read())
+async def root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/game", response_class=HTMLResponse)
-async def game():
-    with open("templates/game.html", "r") as f:
-        return HTMLResponse(f.read())
-    
+async def game(request: Request):
+    return templates.TemplateResponse("game.html", {"request": request})
+
 @app.get("/room", response_class=HTMLResponse)
-async def room():
-    with open("templates/room.html", "r") as f:
-        return HTMLResponse(f.read())
+async def room(request: Request):
+    return templates.TemplateResponse("room.html", {"request": request})
 
 
 @app.websocket("/ws/game")
