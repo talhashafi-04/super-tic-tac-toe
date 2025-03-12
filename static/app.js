@@ -369,6 +369,8 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('gameArea').style.display = 'block';
     };
 
+
+    
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
@@ -690,26 +692,26 @@ document.addEventListener("DOMContentLoaded", function () {
     function sendChat() {
         const input = document.getElementById('chatInput');
         const message = input.value.trim();
-        
         if (message) {
+            // Send message to server
             socket.send(JSON.stringify({ type: 'chat', message }));
             input.value = '';
+            
+            // Add your own message locally with "self" styling
+            addChatMessage(playerName, message, true); // isSelf = true
         }
     }
 
-    // Add chat message to chat box
-    function addChatMessage(sender, message, isSystem = false) {
+    function addChatMessage(sender, message, isSelf = false) {
         const chatBox = document.getElementById('chatBox');
         const msgDiv = document.createElement('div');
         
-        // Determine message type (self, other, or system)
-        if (isSystem) {
-            msgDiv.classList.add('chat-message', 'system');
-        } else if (sender === playerName) {
-            msgDiv.classList.add('chat-message', 'self');
-        } else {
-            msgDiv.classList.add('chat-message', 'other');
-        }
+        // Determine if the message is from yourself
+        const isOwnMessage = sender === playerName;
+        
+        // Apply appropriate styling
+        msgDiv.classList.add('chat-message');
+        msgDiv.classList.add(isOwnMessage ? 'self' : 'other');
         
         const senderDiv = document.createElement('div');
         senderDiv.classList.add('sender');
