@@ -32,7 +32,7 @@ Super Tic-Tac-Toe is an **online multiplayer game** built with **FastAPI** and *
 ### 🔹 Local Setup
 1. Clone the repository:
    ```sh
-   git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+   git clone https://github.com/talhashafi-04/super-tic-tac-toe.git
    cd super-tic-tac-toe
    ```
 2. Install dependencies:
