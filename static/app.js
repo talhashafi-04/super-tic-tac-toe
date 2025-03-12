@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const playerName = new URLSearchParams(window.location.search).get('name');
     const roomCode = new URLSearchParams(window.location.search).get('room') || null;
 
-    const socket = new WebSocket(`ws://${window.location.host}/ws/game?name=${encodeURIComponent(playerName)}${roomCode ? `&room=${roomCode}` : ''}`);
+    const socket = new WebSocket(`wss://${window.location.host}/ws/game?name=${encodeURIComponent(playerName)}${roomCode ? `&room=${roomCode}` : ''}`);
     let currentPlayer = '';
     let gameState = 'waiting';
     let nextBoardIndex = -1; // -1 means player can choose any board
