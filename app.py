@@ -188,6 +188,18 @@ async def game_websocket(ws: WebSocket, name: str, room: str = None):
     player = Player(name=name, ws=ws)
     role = game_room.add_player(player)
 
+
+
+    # Send a player joined event with updated player lists to all existing players
+    player_joined_message = {
+        "type": "playerJoined",
+        "player": name,
+        "players": [p.name for p in game_room.players],
+        "spectators": [s.name for s in game_room.spectators]
+    }
+
+    await broadcast_to_all(game_room, player_joined_message, exclude=player)
+
     # Send the room code to the client
     await ws.send_json({
         "type": "roomInfo",
@@ -196,6 +208,8 @@ async def game_websocket(ws: WebSocket, name: str, room: str = None):
 
     # Send current game state to the new player
     await ws.send_json(game_room.game_state_payload())
+    
+    
 
     # Broadcast to all other players that a new player has joined
     await broadcast_chat(game_room, "System", f"{name} has joined the game as a {role}.")
@@ -217,6 +231,15 @@ async def game_websocket(ws: WebSocket, name: str, room: str = None):
 
     except WebSocketDisconnect:
         game_room.remove_player(player)
+
+        # Add this:
+        player_left_message = {
+            "type": "playerLeft",
+            "player": name,
+            "players": [p.name for p in game_room.players],
+            "spectators": [s.name for s in game_room.spectators]
+        }
+        await broadcast_to_all(game_room, player_left_message)
         await broadcast_chat(game_room, "System", f"{name} has left the game.")
         
         # If the room is empty, delete it

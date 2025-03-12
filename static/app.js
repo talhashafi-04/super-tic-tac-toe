@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const socket = new WebSocket(`${protocol}://${window.location.host}/ws/game?name=${encodeURIComponent(playerName)}${roomCode ? `&room=${roomCode}` : ''}`);
     
-    
+    let players = []; // Store players array here
     let currentPlayer = '';
     let gameState = 'waiting';
     let nextBoardIndex = -1; // -1 means player can choose any board
@@ -23,18 +23,59 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data.type === 'state') {
             updateSuperBoard(data.superBoard, data.localBoards, data.nextBoardIndex);
             updatePlayers(data.players, data.spectators);
-            updateTurnIndicator(data.currentPlayer, data.gameState);
+            updateTurnIndicator(data.currentPlayer, data.gameState, data.players);
             updateNextBoardIndicator(data.nextBoardIndex);
             nextBoardIndex = data.nextBoardIndex;
+            currentPlayer = data.currentPlayer; // Update currentPlayer with server data
+            gameState = data.gameState; // Update gameState with server data
             if (data.gameState !== 'waiting' && data.gameState !== 'playing') {
                 updateGameStatusDisplay(data.gameState, data.winner);
             }
         } else if (data.type === 'chat') {
             addChatMessage(data.sender, data.message);
         } else if (data.type === 'roomInfo') {
-            document.getElementById('roomCodeDisplay').innerText = data.room;
+            updateRoomCode(data.room);
+        } else if (data.type === 'playerJoined') {
+            // Handle player joined event separately to update player list immediately
+            if (data.players) {
+                updatePlayers(data.players, data.spectators || []);
+            }
+            updateTurnIndicator('X', 'playing', data.players);
+            updateNextBoardIndicator(nextBoardIndex);
+           
+        }
+        else if (data.type === 'playerLeft') {
+            // Handle player left event
+            if (data.players) {
+                updatePlayers(data.players, data.spectators || []);
+            }
+            // Chat message is already handled separately
         }
     };
+
+    function updateRoomCode(roomCode) {
+        const roomCodeDisplay = document.getElementById('roomCodeDisplay');
+        roomCodeDisplay.innerText = roomCode;
+        
+        // Make the room code element clickable for copying
+        const roomCodeContainer = roomCodeDisplay.parentElement;
+        roomCodeContainer.style.cursor = 'pointer';
+        roomCodeContainer.title = 'Click to copy room code';
+        roomCodeContainer.onclick = () => {
+            navigator.clipboard.writeText(roomCode)
+                .then(() => {
+                    // Show copy confirmation
+                    const originalText = roomCodeContainer.innerHTML;
+                    roomCodeContainer.innerHTML = `<i class="fas fa-check"></i> Copied!`;
+                    setTimeout(() => {
+                        roomCodeContainer.innerHTML = originalText;
+                    }, 1500);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        };
+    }
 
     function updateSuperBoard(superBoard, localBoards, nextBoardIndex) {
         const superBoardElement = document.getElementById('superBoard');
@@ -104,13 +145,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function updatePlayers(players, spectators) {
-        const playerList = document.getElementById('playerList');
+    function updatePlayers(serverPlayers, spectators) {
+        // Store the players array in the global variable
+        players = serverPlayers;
+        
+        const playerListElement = document.getElementById('playerList');
         const spectatorList = document.getElementById('spectatorList');
         
-        playerList.innerHTML = '';
+        playerListElement.innerHTML = '';
         if (players.length === 0) {
-            playerList.innerHTML = '<li>Waiting for players...</li>';
+            playerListElement.innerHTML = '<li>Waiting for players...</li>';
         } else {
             players.forEach((player, index) => {
                 const li = document.createElement('li');
@@ -118,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 li.innerHTML = player === playerName ? 
                     `<i class="fas fa-user-circle"></i> ${player}${symbol} (You)` : 
                     `${player}${symbol}`;
-                playerList.appendChild(li);
+                playerListElement.appendChild(li);
             });
         }
         
@@ -136,16 +180,22 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function updateTurnIndicator(currentPlayer, gameState) {
+    function updateTurnIndicator(playerTurn, gameState, playersList) {
         const turnIndicator = document.getElementById('turnIndicator');
         
         if (gameState === 'waiting') {
             turnIndicator.innerHTML = '<i class="fas fa-circle-play"></i> Waiting for players...';
         } else if (gameState === 'playing') {
-            const playerSymbol = currentPlayer === 'X' ? 
+            // Find which player is currently playing
+            const playerIndex = playerTurn === 'X' ? 0 : 1;
+            const currentPlayerName = playersList && playersList.length > playerIndex ? playersList[playerIndex] : playerTurn;
+            
+            const playerSymbol = playerTurn === 'X' ? 
                 '<i class="fas fa-times" style="color: var(--primary);"></i>' : 
                 '<i class="fas fa-circle" style="color: var(--secondary);"></i>';
-            turnIndicator.innerHTML = `${playerSymbol} ${currentPlayer}'s turn`;
+                
+            // Display player's name instead of just symbol
+            turnIndicator.innerHTML = `${playerSymbol} ${currentPlayerName}'s turn (${playerTurn})`;
         } else if (gameState === 'win') {
             turnIndicator.innerHTML = `<i class="fas fa-trophy"></i> Game over`;
         } else if (gameState === 'draw') {
@@ -159,7 +209,11 @@ document.addEventListener("DOMContentLoaded", function () {
         gameStatus.classList.add('active');
         
         if (gameState === 'win') {
-            gameStatus.innerHTML = `<i class="fas fa-crown"></i> Player ${winner} wins!`;
+            // Find the player name associated with the winning symbol
+            const winnerPlayerIndex = winner === 'X' ? 0 : 1;
+            const winnerName = players.length > winnerPlayerIndex ? players[winnerPlayerIndex] : winner;
+            
+            gameStatus.innerHTML = `<i class="fas fa-crown"></i> ${winnerName} (${winner}) wins!`;
             gameStatus.classList.add('win');
             gameStatus.classList.remove('draw');
         } else if (gameState === 'draw') {
@@ -168,7 +222,8 @@ document.addEventListener("DOMContentLoaded", function () {
             gameStatus.classList.remove('win');
         }
     }
-    // Client-side validation (add to makeMove function)
+    
+    // Client-side validation
     function makeMove(index) {
         // Check if it's my turn
         const mySymbol = players[0] === playerName ? 'X' : 'O';
@@ -179,8 +234,6 @@ document.addEventListener("DOMContentLoaded", function () {
         
         socket.send(JSON.stringify({ type: 'move', index }));
     }
-
-    
 
     function sendChat() {
         const input = document.getElementById('chatInput');
@@ -241,6 +294,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-
-
+    
+    const sendBtn = document.querySelector('.send-btn');
+    if (sendBtn) {
+        sendBtn.addEventListener('click', sendChat);
+    }
 });
