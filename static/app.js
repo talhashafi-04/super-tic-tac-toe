@@ -3,7 +3,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const playerName = new URLSearchParams(window.location.search).get('name');
     const roomCode = new URLSearchParams(window.location.search).get('room') || null;
 
-    const socket = new WebSocket(`wss://${window.location.host}/ws/game?name=${encodeURIComponent(playerName)}${roomCode ? `&room=${roomCode}` : ''}`);
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+
+    const socket = new WebSocket(`${protocol}://${window.location.host}/ws/game?name=${encodeURIComponent(playerName)}${roomCode ? `&room=${roomCode}` : ''}`);
+    
+    
     let currentPlayer = '';
     let gameState = 'waiting';
     let nextBoardIndex = -1; // -1 means player can choose any board
@@ -164,10 +168,19 @@ document.addEventListener("DOMContentLoaded", function () {
             gameStatus.classList.remove('win');
         }
     }
-
+    // Client-side validation (add to makeMove function)
     function makeMove(index) {
+        // Check if it's my turn
+        const mySymbol = players[0] === playerName ? 'X' : 'O';
+        if (currentPlayer !== mySymbol) {
+            addChatMessage('System', "It's not your turn yet!", false);
+            return;
+        }
+        
         socket.send(JSON.stringify({ type: 'move', index }));
     }
+
+    
 
     function sendChat() {
         const input = document.getElementById('chatInput');
@@ -227,7 +240,6 @@ document.addEventListener("DOMContentLoaded", function () {
             sendChat();
         }
     });
-
 
 
 
