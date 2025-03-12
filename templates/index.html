@@ -4,10 +4,686 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Tic-Tac-Toe</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='index.css') }}">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base & Resets */
+        :root {
+            --primary: #4c6ef5;
+            --primary-dark: #3b5bdb;
+            --secondary: #ff7675;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --success: #51cf66;
+            --danger: #fa5252;
+            --warning: #fcc419;
+            --info: #15aabf;
+            --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --x-color: #ff6b6b;
+            --o-color: #4c6ef5;
+            --border-radius: 8px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary);
+        }
+
+        button {
+            cursor: pointer;
+            font-family: var(--font-main);
+        }
+
+        input, button {
+            border: none;
+            outline: none;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* Layout Components */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1rem;
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Buttons & Inputs */
+        .button-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 110, 245, 0.4);
+        }
+
+        .button-primary:active {
+            transform: translateY(0);
+        }
+
+        .button-primary i {
+            margin-right: 0.5rem;
+        }
+
+        .icon-button {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .icon-button:hover {
+            background-color: var(--gray-light);
+            color: var(--dark);
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+        }
+
+        /* Landing Page */
+        .landing-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .landing-hero {
+            display: flex;
+            align-items: center;
+            min-height: 80vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .landing-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: backgroundScroll 30s linear infinite;
+        }
+
+        @keyframes backgroundScroll {
+            from { background-position: 0 0; }
+            to { background-position: 100px 100px; }
+        }
+
+        .hero-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 600px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInLeft 1s ease-out;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            margin: 1.5rem 0 2.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            animation: fadeInRight 1s ease-out;
+        }
+
+        .game-logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+        }
+
+        .game-logo i {
+            font-size: 2rem;
+            margin-right: 1rem;
+            color: var(--secondary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .game-logo h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ff7675, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .game-preview {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .game-preview:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .preview-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            width: 300px;
+            height: 300px;
+        }
+
+        .preview-cell {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+
+        .preview-cell:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .x-preview::before, .x-preview::after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 10px;
+            background-color: var(--x-color);
+            border-radius: 5px;
+            animation: drawX 0.5s ease-out backwards;
+        }
+
+        .x-preview::before {
+            transform: rotate(45deg);
+            animation-delay: calc(var(--i, 0) * 0.2s);
+        }
+
+        .x-preview::after {
+            transform: rotate(-45deg);
+            animation-delay: calc(var(--i, 0) * 0.2s + 0.1s);
+        }
+
+        @keyframes drawX {
+            from { 
+                width: 0; 
+                opacity: 0;
+            }
+            to { 
+                width: 60%; 
+                opacity: 1;
+            }
+        }
+
+        .o-preview::before {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            border: 10px solid var(--o-color);
+            border-radius: 50%;
+            animation: drawO 0.5s ease-out backwards;
+            animation-delay: calc(var(--i, 0) * 0.2s);
+        }
+
+        @keyframes drawO {
+            from { 
+                transform: scale(0);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Features Section */
+        .features-section {
+            margin-top: 0;
+            padding: 4rem 2rem;
+            text-align: center;
+            background-color: white;
+        }
+
+        .features-section h2 {
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .features-section h2::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 5px;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .features-section h2:hover::before {
+            width: 100px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 220px;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            background-color: rgba(76, 110, 245, 0.1);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            background-color: rgba(76, 110, 245, 0.2);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            font-size: 1rem;
+            color: var(--gray);
+            text-align: center;
+        }
+
+        /* How to Play Section */
+        .how-to-play {
+            padding: 4rem 2rem;
+            background-color: var(--light);
+            text-align: center;
+        }
+
+        .how-to-play h2 {
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .how-to-play h2::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 5px;
+            background-color: var(--secondary);
+            transition: width 0.3s ease;
+        }
+
+        .how-to-play h2:hover::before {
+            width: 100px;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .step {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            width: 300px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .step:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            background-color: var(--secondary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover .step-number {
+            transform: scale(1.1);
+        }
+
+        .step-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .step-content p {
+            color: var(--gray);
+        }
+
+        /* Footer Section */
+        .footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: white;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+
+        /* Developer Info Section */
+        .developer-info {
+            padding: 2rem;
+            background-color: #f1f3f8;
+            text-align: center;
+        }
+
+        .developer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .developer-heading {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .developer-heading::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .developer-heading:hover::after {
+            width: 100%;
+        }
+
+        .developer-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px);
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 900px) {
+            .landing-hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-content {
+                max-width: 100%;
+                padding: 2rem 1rem;
+            }
+
+            .game-logo {
+                justify-content: center;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="landing-page">
@@ -29,15 +705,15 @@
             <div class="hero-image">
                 <div class="game-preview">
                     <div class="preview-board">
-                        <div class="preview-cell x-preview"></div>
+                        <div class="preview-cell x-preview" style="--i: 0"></div>
                         <div class="preview-cell"></div>
-                        <div class="preview-cell o-preview"></div>
+                        <div class="preview-cell o-preview" style="--i: 1"></div>
                         <div class="preview-cell"></div>
-                        <div class="preview-cell x-preview"></div>
+                        <div class="preview-cell x-preview" style="--i: 2"></div>
                         <div class="preview-cell"></div>
-                        <div class="preview-cell o-preview"></div>
+                        <div class="preview-cell o-preview" style="--i: 3"></div>
                         <div class="preview-cell"></div>
-                        <div class="preview-cell x-preview"></div>
+                        <div class="preview-cell x-preview" style="--i: 4"></div>
                     </div>
                 </div>
             </div>
@@ -109,12 +785,32 @@
             </div>
         </div>
         
+        <div class="developer-info">
+            <div class="developer-container">
+                <h2 class="developer-heading">Developed By</h2>
+                <div class="developer-name">Talha Shafi</div>
+                <p>AI/ML Engineer & Game Enthusiast</p>
+                <div class="social-links">
+                    <a href="" class="social-link" title="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/talhashafi-04" class="social-link" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link" title="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
         <footer class="footer">
             <div class="footer-content">
                 <p>&copy; 2025 Super Tic-Tac-Toe</p>
                 <div class="footer-links">
                     <a href="#" onclick="alert('Rules: Get three in a row to win!'); return false;">Rules</a>
                     <a href="#" onclick="alert('This is a multiplayer Tic-Tac-Toe game using WebSockets.'); return false;">About</a>
+                    <a href="#" onclick="alert('Contact us at support@supertictactoe.com'); return false;">Contact</a>
                 </div>
             </div>
         </footer>
@@ -129,6 +825,38 @@
             if (joinCode) {
                 window.location.href = `/game?join=${joinCode}`;
             }
+            
+            // Add animations to elements when they enter viewport
+            const animateOnScroll = function() {
+                const elements = document.querySelectorAll('.feature-card, .step');
+                
+                elements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    } else {
+                        element.style.opacity = '0';
+                        element.style.transform = 'translateY(20px)';
+                    }
+                });
+            };
+            
+            // Initialize elements for animation
+            const elements = document.querySelectorAll('.feature-card, .step');
+            elements.forEach(element => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            });
+            
+            // Run on scroll
+            window.addEventListener('scroll', animateOnScroll);
+            
+            // Run once on load
+            animateOnScroll();
         });
     </script>
 </body>
