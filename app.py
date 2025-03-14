@@ -216,8 +216,7 @@ async def game_websocket(ws: WebSocket, name: str, room: str = None):
 
     # Send current game state to the new player
     await ws.send_json(game_room.game_state_payload())
-    
-    
+    await broadcast_state(game_room)
 
     # Broadcast to all other players that a new player has joined
     await broadcast_chat(game_room, "System", f"{name} has joined the game as a {role}.")

@@ -305,6 +305,8 @@
 
 
 document.addEventListener("DOMContentLoaded", function () {
+
+
     // Get player name and room code from URL parameters
     const playerName = new URLSearchParams(window.location.search).get('name');
     const roomCode = new URLSearchParams(window.location.search).get('room') || null;
@@ -477,10 +479,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 
                 if (localBoards[globalIndex] === 'X') {
                     cell.classList.add('x');
-                    cell.innerHTML = '<i class="fas fa-times"></i>';
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-times';
+                    cell.appendChild(icon);
                 } else if (localBoards[globalIndex] === 'O') {
                     cell.classList.add('o');
-                    cell.innerHTML = '<i class="fas fa-circle"></i>';
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-circle';
+                    cell.appendChild(icon);
                 }
                 
                 // Disable cell if:
