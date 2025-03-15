@@ -27,6 +27,40 @@
             </div>
             
             <div class="game-container">
+                <div class="info-section">
+                    
+                    <div class="room-card glass-card"> 
+                        <div class="card-header">
+                            <i class="fas fa-door-open"></i>
+                            <h3>Room</h3>
+                        </div>
+
+                        <div class="room-info">
+                            <i class="fas fa-hashtag pulse-icon"></i>
+                            <span id="roomCodeDisplay" class="room-code">Loading room...</span>
+                            <span class="tooltip">Click to copy</span>
+                        </div>
+                    </div>
+                    <div class="player-card glass-card">
+                        <div class="card-header ">
+                            <i class="fas fa-info-circle"></i>
+                            <h3>Game Rules</h3>
+                        </div>
+                        <div class="rules-content" id="rulesContent">
+                            <h4><i class="fas fa-lightbulb"></i> How to Play Ultimate Tic-Tac-Toe:</h4>
+                            <ul>
+                                <li><i class="fas fa-chess-board"></i> 9 smaller boards arranged in a 3×3 grid.</li>
+                                <li><i class="fas fa-play"></i> First player can place mark anywhere.</li>
+                                <li><i class="fas fa-directions"></i> Last move position determines next player's board.</li>
+                                <li><i class="fas fa-random"></i> If sent to a won/full board, play on any open board.</li>
+                                <li><i class="fas fa-trophy"></i> Win by getting three boards in a row.</li>
+                            </ul>
+                            <div class="rules-tip">
+                                <i class="fas fa-star"></i> Pro tip: Place marks strategically to control opponent's next move!
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="board-section">
                     <div class="game-indicators">
                         <div class="turn-indicator" id="turnIndicator">
@@ -51,39 +85,9 @@
                             <p>Waiting for opponent...</p>
                         </div>
                     </div>
-                    
-                    <div class="game-rules">
-                        <div class="rules-toggle" id="rulesToggle">
-                            <i class="fas fa-book"></i> Game Rules <i class="fas fa-chevron-down rules-arrow"></i>
-                        </div>
-                        <div class="rules-content" id="rulesContent">
-                            <h4><i class="fas fa-lightbulb"></i> How to Play Ultimate Tic-Tac-Toe:</h4>
-                            <ul>
-                                <li><i class="fas fa-chess-board"></i> The board consists of 9 smaller tic-tac-toe boards arranged in a 3×3 grid.</li>
-                                <li><i class="fas fa-play"></i> The first player can place their mark anywhere on any small board.</li>
-                                <li><i class="fas fa-directions"></i> The position of the last played mark determines which small board the next player must play in.</li>
-                                <li><i class="fas fa-random"></i> If a player is sent to a small board that is already won or full, they can play on any open small board.</li>
-                                <li><i class="fas fa-trophy"></i> To win the game, a player must win three small boards in a row (horizontally, vertically, or diagonally).</li>
-                            </ul>
-                            <div class="rules-tip">
-                                <i class="fas fa-star"></i> Pro tip: Think strategically about where you place your mark, as it determines where your opponent must play next!
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="info-section">
-                    <div class="room-card glass-card"> 
-                        <div class="card-header">
-                            <i class="fas fa-door-open"></i>
-                            <h3>Room</h3>
-                        </div>
-
-                        <div class="room-info">
-                            <i class="fas fa-hashtag pulse-icon"></i>
-                            <span id="roomCodeDisplay" class="room-code">Loading room...</span>
-                            <span class="tooltip">Click to copy</span>
-                        </div>
-                    </div>
+                    
                     
                     <div class="player-card glass-card">
                         <div class="card-header">
