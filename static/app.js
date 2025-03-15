@@ -750,21 +750,21 @@ document.addEventListener("DOMContentLoaded", function () {
         addChatMessage('System', 'Connection error. Please refresh the page.', true);
     };
 
-    // Toggle rules
-    document.getElementById('rulesToggle').addEventListener('click', function() {
-        const rulesContent = document.getElementById('rulesContent');
-        const rulesArrow = document.querySelector('.rules-arrow');
+    // // Toggle rules
+    // document.querySelector('.rules-toggle').addEventListener('click', function() {
+    //     const rulesContent = document.querySelector('.rules-content');
+    //     const rulesArrow = document.querySelector('.rules-arrow');
         
-        rulesContent.classList.toggle('active');
+    //     rulesContent.classList.toggle('active');
         
-        if (rulesContent.classList.contains('active')) {
-            rulesArrow.classList.add('fa-chevron-up');
-            rulesArrow.classList.remove('fa-chevron-down');
-        } else {
-            rulesArrow.classList.add('fa-chevron-down');
-            rulesArrow.classList.remove('fa-chevron-up');
-        }
-    });
+    //     if (rulesContent.classList.contains('active')) {
+    //         rulesArrow.classList.add('fa-chevron-up');
+    //         rulesArrow.classList.remove('fa-chevron-down');
+    //     } else {
+    //         rulesArrow.classList.add('fa-chevron-down');
+    //         rulesArrow.classList.remove('fa-chevron-up');
+    //     }
+    // });
 
     // Handle emoji buttons
     const emojiButtons = document.querySelectorAll('.emoji-btn');

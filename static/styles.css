@@ -81,35 +81,120 @@ body::before {
     margin: 0 auto;
     position: relative;
     z-index: 1;
+    margin-bottom: 10% ;
 }
-/* Header */
 .game-header {
     text-align: center;
     margin-bottom: 2rem;
-    color: #f9f4f4;
-    /* color: var(--light); */
+    padding: 1rem 0;
+    position: relative;
+}
+
+.title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+}
+
+.game-icon {
+    background: linear-gradient(135deg, #7a5cf0, #5643cc);
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(86, 67, 204, 0.5);
+}
+
+.game-icon i {
+    color: #fff;
+    font-size: 1.4rem;
 }
 
 .game-header h1 {
     font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.1);
-    color: #f9f4f4;
+    margin: 0;
+    background: linear-gradient(to right, #ffffff, #e0d6ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
+    letter-spacing: 1px;
+    font-weight: 700;
+    position: relative;
+}
 
-    /* color: var(--primary); */
+.game-header h1::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 3px;
+    background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.8), rgba(255,255,255,0));
+}
+
+.header-decoration {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    opacity: 0.15;
+    z-index: -1;
+}
+
+.decoration-x, .decoration-o {
+    position: absolute;
+    font-size: 5rem;
+    font-weight: bold;
+    opacity: 0.7;
+}
+
+.decoration-x {
+    left: 15%;
+    top: 1.5rem;
+    color: #ff7675;
+    transform: rotate(-15deg);
+}
+
+.decoration-o {
+    right: 15%;
+    top: 1.5rem;
+    color: #74b9ff;
+    transform: rotate(15deg);
+}
+
+@media (max-width: 768px) {
+    .game-header h1 {
+        font-size: 2rem;
+    }
+    
+    .game-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    
+    .decoration-x, .decoration-o {
+        font-size: 3.5rem;
+    }
 }
 
 .room-info {
     background-color: var(--secondary);
-    color: var(--light);
-    padding: 0.5rem 1.5rem;
-    border-radius: 50px;
-    display: inline-flex;
+    color: var(--dark);
+    padding: 1rem 1.5rem;
+    border-radius: 15px;  /* Changed from 50px to 15px for less rounded corners */
+    display: flex;
     align-items: center;
     box-shadow: var(--card-shadow);
     position: relative;
     cursor: pointer;
     transition: var(--transition);
+    width: 100%;  /* Make it take full width like other sections */
 }
 
 .room-info:hover {
@@ -126,6 +211,7 @@ body::before {
     margin-left: 0.5rem;
     font-weight: bold;
 }
+
 
 .tooltip {
     position: absolute;
@@ -163,7 +249,10 @@ body::before {
 .game-container {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
+    flex-grow: 0;
     gap: 2rem;
+    
 }
 
 @media (min-width: 992px) {
@@ -186,9 +275,8 @@ body::before {
 
 .game-indicators {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
-    width: 100%;
     max-width: 600px;
     margin-bottom: 1.5rem;
 }
@@ -411,9 +499,6 @@ body::before {
     transition: var(--transition);
 }
 
-.rules-content.active + .rules-toggle .rules-arrow {
-    transform: rotate(180deg);
-}
 
 .rules-content {
     background-color: var(--bg-color);
@@ -472,11 +557,14 @@ body::before {
 
 /* Info Section */
 .info-section {
+
+
     width: 100%;
     max-width: 350px;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    
 }
 
 .glass-card {
@@ -501,7 +589,7 @@ body::before {
     font-size: 1.2rem;
 }
 
-.player-card, .chat-card {
+.player-card, .chat-card , .room-card{
     display: flex;
     flex-direction: column;
 }
@@ -743,6 +831,8 @@ body::before {
     .game-container {
         flex-direction: column;
         align-items: center;
+
+
     }
     
     .info-section {
@@ -754,7 +844,7 @@ body::before {
     }
 }
 
-@media (max-width: 576px) {
+/* @media (max-width: 576px) {
     .game-header h1 {
         font-size: 2rem;
     }
@@ -774,10 +864,43 @@ body::before {
     .rules-content li {
         font-size: 0.9rem;
     }
+} */
+
+
+.mobile-game-controls
+{
+    display: none;
+}
+.mobile-game-status
+{
+    display: none;
+}
+
+.chat-panel
+{
+    display: none;
+}
+.players-panel
+{
+    display: none;
+}
+.info-section-for-mobile
+{
+    display: none;
+
+}
+.board-overlay
+{
+    display: none;
 }
 
 /* Mobile-first responsive design */
 @media (max-width: 768px) {
+   
+    .info-section
+    {
+        display: none;
+    }
     body {
         padding: 0;
         margin: 0;
@@ -801,6 +924,7 @@ body::before {
     }
 
     .room-info {
+        
         padding: 0.4rem 1rem;
         font-size: 0.9rem;
     }
@@ -809,6 +933,7 @@ body::before {
     .game-container {
         flex-direction: column;
         gap: 0;
+        
     }
 
     /* Make the board section full width */
@@ -843,7 +968,7 @@ body::before {
     }
 
     /* Hide info section by default */
-    .info-section {
+    .info-section-for-mobile {
         display: none;
         position: fixed;
         top: 0;
@@ -856,7 +981,7 @@ body::before {
         overflow-y: auto;
     }
 
-    .info-section.active {
+    .info-section-for-mobile.active {
         display: block;
         animation: slideUp 0.3s ease-out;
     }
@@ -966,6 +1091,7 @@ body::before {
         margin-bottom: 0.5rem;
     }
 
+    
     .chat-input-container {
         padding-bottom: 0.5rem;
     }
@@ -976,6 +1102,7 @@ body::before {
         overflow: hidden;
         transition: max-height 0.3s ease-out;
         margin-top: 0;
+        position: absolute;
     }
 
     .rules-content.active {

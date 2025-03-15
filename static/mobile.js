@@ -15,8 +15,8 @@
       const closeSettingsPanel = document.getElementById('closeSettingsPanel');
       const closeInfoPanel = document.getElementById('closeInfoPanel');
       
-      const rulesToggle = document.getElementById('rulesToggle');
-      const rulesContent = document.getElementById('rulesContent');
+      const rulesToggle = document.querySelector('.rules-toggle');
+      const rulesContent = document.querySelector('.rules-content');
       
       const mobileGameStatus = document.getElementById('mobileGameStatus');
       const boardOverlay = document.getElementById('boardOverlay');
