@@ -322,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let gameState = 'waiting';
     let nextBoardIndex = -1; // -1 means player can choose any board
     let isConfettiActive = false;
-
+    let isYourTurnVar = true;
     // Initialize particles.js
     if (typeof particlesJS !== 'undefined') {
         particlesJS('particles-js', {
@@ -378,13 +378,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         switch (data.type) {
             case 'state':
-                updateSuperBoard(data.superBoard, data.localBoards, data.nextBoardIndex);
                 updatePlayers(data.players, data.spectators);
                 updateTurnIndicator(data.currentPlayer, data.gameState, data.players);
                 updateNextBoardIndicator(data.nextBoardIndex);
+
                 nextBoardIndex = data.nextBoardIndex;
                 currentPlayer = data.currentPlayer;
                 gameState = data.gameState;
+                updateSuperBoard(data.superBoard, data.localBoards, data.nextBoardIndex);
                 
                 // If game is over, show game status
                 if (data.gameState !== 'waiting' && data.gameState !== 'playing') {
@@ -464,7 +465,11 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 // If this is the next board to play on, highlight it
                 if (nextBoardIndex === -1 || nextBoardIndex === i) {
-                    localBoardElement.classList.add('active');
+                    
+                    if(isYourTurnVar)
+                        localBoardElement.classList.add('active');
+                    else
+                        localBoardElement.classList.add('other');
                 } else {
                     localBoardElement.classList.add('inactive');
                 }
@@ -580,6 +585,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const currentPlayerName = playersList && playersList.length > playerIndex ? playersList[playerIndex] : playerTurn;
             
             const isYourTurn = playersList[playerIndex] === playerName;
+            isYourTurnVar = isYourTurn;
             const playerSymbol = playerTurn === 'X' ? 
                 '<i class="fas fa-times" style="color: var(--light);"></i>' : 
                 '<i class="fas fa-circle" style="color: var(--light);"></i>';
@@ -750,21 +756,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addChatMessage('System', 'Connection error. Please refresh the page.', true);
     };
 
-    // // Toggle rules
-    // document.querySelector('.rules-toggle').addEventListener('click', function() {
-    //     const rulesContent = document.querySelector('.rules-content');
-    //     const rulesArrow = document.querySelector('.rules-arrow');
-        
-    //     rulesContent.classList.toggle('active');
-        
-    //     if (rulesContent.classList.contains('active')) {
-    //         rulesArrow.classList.add('fa-chevron-up');
-    //         rulesArrow.classList.remove('fa-chevron-down');
-    //     } else {
-    //         rulesArrow.classList.add('fa-chevron-down');
-    //         rulesArrow.classList.remove('fa-chevron-up');
-    //     }
-    // });
+    
 
     // Handle emoji buttons
     const emojiButtons = document.querySelectorAll('.emoji-btn');
