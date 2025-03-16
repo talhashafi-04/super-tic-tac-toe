@@ -1,5 +1,4 @@
 :root {
-
     font-size: 13px;
   --primary: #4c6ef5;
   --primary-dark: #3b5bdb;
@@ -797,6 +796,7 @@ body::before {
 .send-btn {
   width: 50px;
   height: 50px;
+  margin: 2px;
   border-radius: 50%;
   background-color: var(--primary);
   color: white;
@@ -1087,17 +1087,17 @@ body::before {
     /* Chat interface in mobile */
     .chat-panel {
         position: fixed;
-        bottom: 0;
+        bottom: 8%;
         left: 0;
         width: 100%;
-        height: 60%;
+        height: 80%;
         background-color: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
         border-top-left-radius: 20px;
         border-top-right-radius: 20px;
         z-index: 101;
         box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-        transform: translateY(100%);
+        transform: translateY(110%);
         transition: transform 0.3s ease-out;
         display: flex;
         flex-direction: column;
@@ -1112,6 +1112,9 @@ body::before {
         flex: 1;
         overflow-y: auto;
         margin-bottom: 0.5rem;
+        min-height: 350px;
+        max-height: 350px;
+        padding: 1rem;
     }
 
     .chat-input-container {
@@ -1134,7 +1137,8 @@ body::before {
     .players-panel {
         /*only left borders are curved*/
         border-top-left-radius: 3rem;
-        border-radius: 3rem;
+        border-bottom-left-radius: 3rem;
+        
         position: fixed;
         top: 0;
         right: 0;

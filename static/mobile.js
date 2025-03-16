@@ -74,7 +74,7 @@ function checkIfMobile() {
                       </div>`;
         rulesPanel.className= "players-panel";
         playersPanel.className = "chat-panel";
-        chatPanel.className = "chat-panel glass-card";
+        chatPanel.className = "chat-panel";
     } else 
     {
         info1.className = "info-section";
