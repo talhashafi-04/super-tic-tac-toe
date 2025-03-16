@@ -1214,7 +1214,7 @@ body::before {
 
     /* Adjust cell size for better tap areas */
     .cell {
-        min-height: 30px;
+        
         border-radius: 10%;
     }
 
